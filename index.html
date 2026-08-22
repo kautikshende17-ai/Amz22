@@ -34,17 +34,13 @@
       font-family: 'Outfit', sans-serif;
     }
 
-    /* Custom Slim Scrollbar for Letter & Balloon Reasons */
-    .custom-scroll::-webkit-scrollbar {
-      width: 4px;
+    /* Clean subtle scrollbar */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
     }
-    .custom-scroll::-webkit-scrollbar-track {
-      background: rgba(217, 119, 6, 0.05);
-      border-radius: 4px;
-    }
-    .custom-scroll::-webkit-scrollbar-thumb {
-      background: rgba(217, 119, 6, 0.25);
-      border-radius: 4px;
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
 
     /* Scene Transitions */
@@ -90,11 +86,11 @@
     /* Floating Animations */
     @keyframes float1 {
       0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-14px) rotate(2deg); }
+      50% { transform: translateY(-12px) rotate(2deg); }
     }
     @keyframes float2 {
       0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-18px) rotate(-3deg); }
+      50% { transform: translateY(-15px) rotate(-2deg); }
     }
     @keyframes floatLantern {
       0%, 100% { transform: translateY(0px) rotate(-1deg); filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.6)); }
@@ -380,10 +376,10 @@
   </section>
 
   <!-- ============================================================ -->
-  <!-- SCENE 4: POP THE BALLOONS (UPDATED REASONS & SPECIAL ENDING) -->
+  <!-- SCENE 4: POP THE BALLOONS (FULL-SIZED 3D BALLOONS & BIG FINALE) -->
   <!-- ============================================================ -->
   <section id="scene4" class="scene bg-gradient-to-b from-[#180d24] via-[#241238] to-[#12071a] text-white">
-    <div class="max-w-md w-full h-full flex flex-col justify-between py-6 px-4 overflow-y-auto custom-scroll">
+    <div class="max-w-lg w-full h-full flex flex-col justify-between py-6 px-4 overflow-y-auto no-scrollbar">
       
       <div class="text-center pt-1 shrink-0">
         <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-300 text-xs font-semibold uppercase tracking-wider mb-1">
@@ -393,63 +389,76 @@
         <p id="balloonSubText" class="text-xs text-gray-300/80">5 balloons. Each one holds a reason you're loved. Pop them all ✨</p>
       </div>
 
-      <!-- 5 Floating Balloons -->
-      <div id="balloonsContainer" class="relative w-full h-28 flex items-center justify-center gap-3 my-2 shrink-0">
-        <div id="balloon-0" onclick="popBalloon(0)" class="animate-float-1 cursor-pointer flex flex-col items-center transform transition-transform active:scale-75 hover:scale-110">
-          <div class="w-11 h-15 rounded-full bg-gradient-to-br from-pink-400 to-rose-600 shadow-lg shadow-pink-500/40 relative">
-            <span class="absolute top-2 left-2 w-3 h-5 bg-white/40 rounded-full blur-[1px]"></span>
+      <!-- 5 Vibrant, Full-Sized Teardrop Balloons -->
+      <div id="balloonsContainer" class="relative w-full h-36 flex items-center justify-center gap-4 my-2 shrink-0">
+        
+        <!-- Balloon 1 (Pink / Rose) -->
+        <div id="balloon-0" onclick="popBalloon(0)" class="animate-float-1 cursor-pointer flex flex-col items-center transform transition-all active:scale-75 hover:scale-110">
+          <div class="relative w-12 h-16 bg-gradient-to-br from-pink-400 via-rose-500 to-rose-600 shadow-xl shadow-pink-500/40" style="border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;">
+            <span class="absolute top-2 left-2.5 w-3 h-5 bg-white/45 rounded-full blur-[0.5px]"></span>
           </div>
-          <div class="w-1 h-2 bg-rose-700 -mt-0.5 rounded-b"></div>
-          <div class="w-0.5 h-5 bg-white/30"></div>
+          <div class="w-2 h-1.5 bg-rose-700 -mt-0.5 rounded-b"></div>
+          <div class="w-0.5 h-8 bg-white/30"></div>
         </div>
 
-        <div id="balloon-1" onclick="popBalloon(1)" class="animate-float-2 cursor-pointer flex flex-col items-center transform transition-transform active:scale-75 hover:scale-110">
-          <div class="w-11 h-15 rounded-full bg-gradient-to-br from-amber-300 to-orange-500 shadow-lg shadow-orange-500/40 relative">
-            <span class="absolute top-2 left-2 w-3 h-5 bg-white/40 rounded-full blur-[1px]"></span>
+        <!-- Balloon 2 (Gold / Orange) -->
+        <div id="balloon-1" onclick="popBalloon(1)" class="animate-float-2 cursor-pointer flex flex-col items-center transform transition-all active:scale-75 hover:scale-110">
+          <div class="relative w-12 h-16 bg-gradient-to-br from-yellow-300 via-amber-500 to-orange-600 shadow-xl shadow-orange-500/40" style="border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;">
+            <span class="absolute top-2 left-2.5 w-3 h-5 bg-white/45 rounded-full blur-[0.5px]"></span>
           </div>
-          <div class="w-1 h-2 bg-orange-600 -mt-0.5 rounded-b"></div>
-          <div class="w-0.5 h-5 bg-white/30"></div>
+          <div class="w-2 h-1.5 bg-orange-700 -mt-0.5 rounded-b"></div>
+          <div class="w-0.5 h-8 bg-white/30"></div>
         </div>
 
-        <div id="balloon-2" onclick="popBalloon(2)" class="animate-float-3 cursor-pointer flex flex-col items-center transform transition-transform active:scale-75 hover:scale-110">
-          <div class="w-11 h-15 rounded-full bg-gradient-to-br from-teal-300 to-cyan-500 shadow-lg shadow-teal-500/40 relative">
-            <span class="absolute top-2 left-2 w-3 h-5 bg-white/40 rounded-full blur-[1px]"></span>
+        <!-- Balloon 3 (Teal / Cyan) -->
+        <div id="balloon-2" onclick="popBalloon(2)" class="animate-float-3 cursor-pointer flex flex-col items-center transform transition-all active:scale-75 hover:scale-110">
+          <div class="relative w-12 h-16 bg-gradient-to-br from-teal-300 via-cyan-500 to-blue-600 shadow-xl shadow-teal-500/40" style="border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;">
+            <span class="absolute top-2 left-2.5 w-3 h-5 bg-white/45 rounded-full blur-[0.5px]"></span>
           </div>
-          <div class="w-1 h-2 bg-teal-600 -mt-0.5 rounded-b"></div>
-          <div class="w-0.5 h-5 bg-white/30"></div>
+          <div class="w-2 h-1.5 bg-teal-700 -mt-0.5 rounded-b"></div>
+          <div class="w-0.5 h-8 bg-white/30"></div>
         </div>
 
-        <div id="balloon-3" onclick="popBalloon(3)" class="animate-float-4 cursor-pointer flex flex-col items-center transform transition-transform active:scale-75 hover:scale-110">
-          <div class="w-11 h-15 rounded-full bg-gradient-to-br from-purple-400 to-indigo-600 shadow-lg shadow-indigo-500/40 relative">
-            <span class="absolute top-2 left-2 w-3 h-5 bg-white/40 rounded-full blur-[1px]"></span>
+        <!-- Balloon 4 (Purple / Indigo) -->
+        <div id="balloon-3" onclick="popBalloon(3)" class="animate-float-4 cursor-pointer flex flex-col items-center transform transition-all active:scale-75 hover:scale-110">
+          <div class="relative w-12 h-16 bg-gradient-to-br from-purple-400 via-indigo-500 to-purple-700 shadow-xl shadow-indigo-500/40" style="border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;">
+            <span class="absolute top-2 left-2.5 w-3 h-5 bg-white/45 rounded-full blur-[0.5px]"></span>
           </div>
-          <div class="w-1 h-2 bg-indigo-700 -mt-0.5 rounded-b"></div>
-          <div class="w-0.5 h-5 bg-white/30"></div>
+          <div class="w-2 h-1.5 bg-indigo-800 -mt-0.5 rounded-b"></div>
+          <div class="w-0.5 h-8 bg-white/30"></div>
         </div>
 
-        <div id="balloon-4" onclick="popBalloon(4)" class="animate-float-5 cursor-pointer flex flex-col items-center transform transition-transform active:scale-75 hover:scale-110">
-          <div class="w-11 h-15 rounded-full bg-gradient-to-br from-red-400 to-pink-600 shadow-lg shadow-rose-500/40 relative">
-            <span class="absolute top-2 left-2 w-3 h-5 bg-white/40 rounded-full blur-[1px]"></span>
+        <!-- Balloon 5 (Coral / Magenta) -->
+        <div id="balloon-4" onclick="popBalloon(4)" class="animate-float-5 cursor-pointer flex flex-col items-center transform transition-all active:scale-75 hover:scale-110">
+          <div class="relative w-12 h-16 bg-gradient-to-br from-rose-400 via-pink-500 to-red-600 shadow-xl shadow-rose-500/40" style="border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;">
+            <span class="absolute top-2 left-2.5 w-3 h-5 bg-white/45 rounded-full blur-[0.5px]"></span>
           </div>
-          <div class="w-1 h-2 bg-pink-700 -mt-0.5 rounded-b"></div>
-          <div class="w-0.5 h-5 bg-white/30"></div>
+          <div class="w-2 h-1.5 bg-pink-800 -mt-0.5 rounded-b"></div>
+          <div class="w-0.5 h-8 bg-white/30"></div>
         </div>
+
       </div>
 
-      <!-- Reasons Stack -->
+      <!-- Reasons Stack Container -->
       <div id="reasonsList" class="flex-1 space-y-2 my-1 flex flex-col justify-center"></div>
 
-      <!-- Updated Special Post-Balloon Quote & Keep Going Button -->
-      <div id="balloonFooter" class="opacity-0 transition-opacity duration-500 pt-3 pb-1 flex flex-col items-center gap-3 shrink-0">
-        <div class="p-3 rounded-2xl bg-white/10 border border-yellow-300/30 backdrop-blur-md text-center shadow-lg w-full">
-          <p class="text-xs md:text-sm text-yellow-200 font-medium font-handwriting text-xl leading-snug">
+      <!-- Loud & Prominent Finale Header + Core Sentiment + Continue Button -->
+      <div id="balloonFooter" class="opacity-0 transition-opacity duration-500 pt-3 pb-2 flex flex-col items-center gap-3 shrink-0 w-full">
+        
+        <div class="p-4 rounded-3xl bg-gradient-to-br from-white/10 via-amber-500/10 to-pink-500/10 border-2 border-yellow-300/50 backdrop-blur-lg text-center shadow-2xl w-full space-y-1.5">
+          <p class="text-xs md:text-sm font-extrabold uppercase tracking-widest text-amber-300 animate-pulse">
+            ✨ and the most obvious reason we all love you is ✨
+          </p>
+          <p class="text-xl md:text-2xl text-white font-handwriting font-bold leading-snug">
             “Simply for being you, one of the most genuine, irreplaceable people in our lives.” 💛
           </p>
         </div>
-        <button onclick="goToScene(5)" class="w-full py-3.5 bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 font-bold rounded-2xl shadow-xl shadow-pink-500/25 active:scale-95 transition-transform flex items-center justify-center gap-2 text-sm">
+
+        <button onclick="goToScene(5)" class="w-full py-4 bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 font-bold rounded-2xl shadow-xl shadow-pink-500/30 active:scale-95 transition-transform flex items-center justify-center gap-2 text-sm tracking-wide">
           <span>Keep going</span>
           <span>✨</span>
         </button>
+
       </div>
 
     </div>
@@ -483,7 +492,7 @@
               </div>
               
               <!-- Clean Typewriter Container with Smooth Internal Scroll -->
-              <div id="letterScrollContainer" class="custom-scroll flex-1 overflow-y-auto pr-1">
+              <div id="letterScrollContainer" class="no-scrollbar flex-1 overflow-y-auto pr-1">
                 <p id="typewriterLetter" class="text-[11.5px] md:text-xs text-gray-700 leading-relaxed font-normal whitespace-pre-wrap break-words text-left"></p>
               </div>
             </div>
@@ -1036,7 +1045,7 @@
       if (cakeFinished) goToScene(4);
     }
 
-    // Scene 4: Balloons with Custom Sentences
+    // Scene 4: Balloons
     const reasonsData = [
       { num: 1, text: "For the passion and grace you bring to your dance, pouring your whole soul into every movement.", color: "from-amber-500/20 to-orange-500/20", border: "border-amber-400/40", icon: "💃" },
       { num: 2, text: "For the quiet strength you carry, handling heavy days with unmatched elegance and poise.", color: "from-pink-500/20 to-rose-500/20", border: "border-pink-400/40", icon: "💖" },
@@ -1096,9 +1105,9 @@
       }
     }
 
-    // Scene 5: Letter & Typewriter with Auto-Scroll & Custom Text
+    // Scene 5: Letter & Typewriter
     let letterOpened = false;
-    const letterParagraph = "Every year I try to find the perfect words, and every year it feels impossible to capture everything properly. But honestly, it just comes down to this: you are one of the kindest, most genuinely caring people I know.\n\nThere is a quiet sincerity in the way you care about things that is extraordinarily rare. You have this natural warmth and grace, and no matter how noisy or overwhelming the world around you gets, beneath all that chaos and hard work, you have a genuinely kind heart that never loses its softness.\n\nI hope you know how much light you bring to the people in your life, and how deeply valued you are, not just for what you accomplish, but simply for the person you are when everything else is stripped away.\n\nI hope this year brings you all the peace, happiness, and beautiful moments you so effortlessly deserve.\n\nHappy Birthday, Amirtha. ✨";
+    const letterParagraph = "Every year I try to find the perfect words, and every year it feels impossible to capture everything properly. But honestly, it just comes down to this: you are one of the kindest, most genuinely caring people I know.\n\nThere is a quiet sincerity in the way you care about things that is extraordinarily rare. You have this natural warmth and grace, and no matter how noisy or overwhelming the world around you gets, beneath all that chaos and hard work, you have a genuinely kind heart that never loses its softness.\n\nI hope you know how much light you bring to the people in your life, and how deeply valued you are—not just for what you accomplish, but simply for the person you are when everything else is stripped away.\n\nI hope this year brings you all the peace, happiness, and beautiful moments you so effortlessly deserve.\n\nHappy Birthday, Amirtha. ✨";
 
     function openLetter() {
       if (letterOpened) return;
