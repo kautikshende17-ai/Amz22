@@ -168,12 +168,7 @@
 </head>
 <body class="w-screen h-screen m-0 p-0 overflow-hidden select-none bg-[#0d0614] text-white">
 
-  <!-- Audio Player -->
-  <audio id="bgMusic" loop preload="auto">
-    <source src="https://assets.mixkit.co/music/preview/mixkit-happy-birthday-to-you-ukulele-and-marimba-499.mp3" type="audio/mp3">
-  </audio>
-
-  <!-- Sound Toggle Button -->
+  <!-- Audio Toggle Button -->
   <button id="musicToggle" onclick="toggleAudio()" class="fixed top-5 right-5 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white shadow-lg transition-all active:scale-90 flex items-center justify-center">
     <svg id="musicIconOn" class="w-5 h-5 hidden text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12 0c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
     <svg id="musicIconOff" class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/></svg>
@@ -430,7 +425,7 @@
           <!-- Envelope Back Body -->
           <div class="absolute inset-0 bg-[#a77334] rounded-2xl shadow-2xl border border-[#c49354]"></div>
 
-          <!-- Slide-Out Letter Card (Fixed layout & dimensions) -->
+          <!-- Slide-Out Letter Card -->
           <div id="letterPaper" class="letter-paper absolute inset-x-2 top-2 bg-[#fffdfa] text-gray-800 rounded-2xl p-6 shadow-2xl flex flex-col justify-between border border-[#e8d7be] min-h-[310px] w-[95%] mx-auto z-10">
             <div>
               <div class="flex items-center justify-between border-b border-amber-100 pb-2 mb-3">
@@ -438,7 +433,6 @@
                 <span class="text-[11px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-semibold">🎂 August 23</span>
               </div>
               
-              <!-- Clean Typewriter Container with explicit word wrap -->
               <div class="w-full">
                 <p id="typewriterLetter" class="text-[13px] md:text-sm text-gray-700 leading-relaxed font-normal whitespace-pre-wrap break-words text-left min-h-[140px]"></p>
               </div>
@@ -540,81 +534,180 @@
   </section>
 
   <!-- ============================================================ -->
-  <!-- JAVASCRIPT CONTROLLER -->
+  <!-- GUARANTEED HYBRID AUDIO ENGINE & JAVASCRIPT CONTROLLER -->
   <!-- ============================================================ -->
   <script>
-    // Audio Player Management
-    const bgMusic = document.getElementById('bgMusic');
+    // -----------------------------------------------------------------
+    // BULLETPROOF WEB AUDIO MELODY SYNTHESIZER (ZERO NETWORK FAILURES)
+    // -----------------------------------------------------------------
+    let audioCtx = null;
     let isMuted = false;
+    let synthInterval = null;
+    let melodyTimeouts = [];
+
+    // Frequencies (Hz) for Cheerful Birthday Ukulele/Kalimba Theme
+    const NOTES = {
+      C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
+      C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00
+    };
+
+    // Full Happy Birthday Melody + Bass Accompaniment Score
+    const birthdayMelody = [
+      { note: NOTES.G4, dur: 0.35, delay: 0 },
+      { note: NOTES.G4, dur: 0.25, delay: 400 },
+      { note: NOTES.A4, dur: 0.6, delay: 700, chord: [NOTES.C4, NOTES.E4] },
+      { note: NOTES.G4, dur: 0.6, delay: 1400 },
+      { note: NOTES.C5, dur: 0.6, delay: 2100, chord: [NOTES.E4, NOTES.G4] },
+      { note: NOTES.B4, dur: 1.1, delay: 2800, chord: [NOTES.G4, NOTES.D4] },
+
+      { note: NOTES.G4, dur: 0.35, delay: 4100 },
+      { note: NOTES.G4, dur: 0.25, delay: 4500 },
+      { note: NOTES.A4, dur: 0.6, delay: 4800, chord: [NOTES.D4, NOTES.F4] },
+      { note: NOTES.G4, dur: 0.6, delay: 5500 },
+      { note: NOTES.D5, dur: 0.6, delay: 6200, chord: [NOTES.G4, NOTES.B4] },
+      { note: NOTES.C5, dur: 1.1, delay: 6900, chord: [NOTES.C4, NOTES.E4] },
+
+      { note: NOTES.G4, dur: 0.35, delay: 8200 },
+      { note: NOTES.G4, dur: 0.25, delay: 8600 },
+      { note: NOTES.G5, dur: 0.6, delay: 8900, chord: [NOTES.C4, NOTES.E4, NOTES.G4] },
+      { note: NOTES.E5, dur: 0.6, delay: 9600 },
+      { note: NOTES.C5, dur: 0.6, delay: 10300, chord: [NOTES.F4, NOTES.A4] },
+      { note: NOTES.B4, dur: 0.6, delay: 11000 },
+      { note: NOTES.A4, dur: 1.0, delay: 11700, chord: [NOTES.F4, NOTES.C4] },
+
+      { note: NOTES.F5, dur: 0.35, delay: 13000 },
+      { note: NOTES.F5, dur: 0.25, delay: 13400 },
+      { note: NOTES.E5, dur: 0.6, delay: 13700, chord: [NOTES.C4, NOTES.G4] },
+      { note: NOTES.C5, dur: 0.6, delay: 14400 },
+      { note: NOTES.D5, dur: 0.6, delay: 15100, chord: [NOTES.G4, NOTES.B4] },
+      { note: NOTES.C5, dur: 1.4, delay: 15800, chord: [NOTES.C4, NOTES.E4, NOTES.G4] }
+    ];
+
+    function playTone(freq, dur = 0.4, type = 'triangle', gainVal = 0.12) {
+      if (!audioCtx || isMuted || audioCtx.state === 'suspended') return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+        // Warm Marimba / Kalimba envelope
+        gain.gain.setValueAtTime(gainVal, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + dur);
+      } catch (e) {}
+    }
+
+    function playScore() {
+      if (isMuted) return;
+      melodyTimeouts.forEach(t => clearTimeout(t));
+      melodyTimeouts = [];
+
+      birthdayMelody.forEach(item => {
+        const t = setTimeout(() => {
+          if (isMuted) return;
+          // Lead melody note (Kalimba)
+          playTone(item.note, item.dur, 'triangle', 0.16);
+          // Harmonic warm resonance
+          playTone(item.note * 0.5, item.dur * 1.2, 'sine', 0.08);
+
+          // Chord backing
+          if (item.chord) {
+            item.chord.forEach(cNote => {
+              playTone(cNote, item.dur * 0.9, 'sine', 0.06);
+            });
+          }
+        }, item.delay);
+        melodyTimeouts.push(t);
+      });
+    }
+
+    function startMusicLoop() {
+      if (synthInterval) return;
+      playScore();
+      synthInterval = setInterval(playScore, 18000);
+    }
 
     function initAudio() {
-      if (bgMusic.paused) {
-        bgMusic.volume = 0.65;
-        bgMusic.play().then(() => {
-          document.getElementById('musicIconOn').classList.remove('hidden');
-          document.getElementById('musicIconOff').classList.add('hidden');
-        }).catch(err => {
-          console.log("Autoplay waiting for tap");
-        });
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      isMuted = false;
+      startMusicLoop();
+      document.getElementById('musicIconOn').classList.remove('hidden');
+      document.getElementById('musicIconOff').classList.add('hidden');
     }
 
     function toggleAudio() {
-      if (bgMusic.paused) {
-        bgMusic.play();
-        isMuted = false;
-        document.getElementById('musicIconOn').classList.remove('hidden');
-        document.getElementById('musicIconOff').classList.add('hidden');
-      } else {
-        bgMusic.pause();
-        isMuted = true;
+      if (!audioCtx) {
+        initAudio();
+        return;
+      }
+      isMuted = !isMuted;
+      if (isMuted) {
+        audioCtx.suspend();
+        melodyTimeouts.forEach(t => clearTimeout(t));
         document.getElementById('musicIconOn').classList.add('hidden');
         document.getElementById('musicIconOff').classList.remove('hidden');
+      } else {
+        audioCtx.resume();
+        playScore();
+        document.getElementById('musicIconOn').classList.remove('hidden');
+        document.getElementById('musicIconOff').classList.add('hidden');
       }
     }
 
-    // Audio SFX
-    let fxCtx = null;
+    // Audio SFX for clicks/pops
     function playPopSound() {
+      if (!audioCtx || isMuted) return;
       try {
-        if (!fxCtx) fxCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (fxCtx.state === 'suspended') fxCtx.resume();
-        const osc = fxCtx.createOscillator();
-        const gain = fxCtx.createGain();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(800, fxCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(120, fxCtx.currentTime + 0.08);
-        gain.gain.setValueAtTime(0.3, fxCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, fxCtx.currentTime + 0.08);
+        osc.frequency.setValueAtTime(850, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(140, audioCtx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
         osc.connect(gain);
-        gain.connect(fxCtx.destination);
+        gain.connect(audioCtx.destination);
         osc.start();
-        osc.stop(fxCtx.currentTime + 0.08);
+        osc.stop(audioCtx.currentTime + 0.08);
       } catch(e) {}
     }
 
     function playChimeSound() {
+      if (!audioCtx || isMuted) return;
       try {
-        if (!fxCtx) fxCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (fxCtx.state === 'suspended') fxCtx.resume();
         [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
           setTimeout(() => {
-            const osc = fxCtx.createOscillator();
-            const gain = fxCtx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(freq, fxCtx.currentTime);
-            gain.gain.setValueAtTime(0.12, fxCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, fxCtx.currentTime + 0.4);
-            osc.connect(gain);
-            gain.connect(fxCtx.destination);
-            osc.start();
-            osc.stop(fxCtx.currentTime + 0.4);
+            playTone(freq, 0.45, 'triangle', 0.12);
           }, idx * 75);
         });
       } catch(e) {}
     }
 
-    // Scene Navigation
+    // Auto-unlock audio on very first user interaction anywhere
+    window.addEventListener('click', function unlockAudio() {
+      initAudio();
+      window.removeEventListener('click', unlockAudio);
+    }, { once: true });
+
+    window.addEventListener('touchstart', function unlockAudioTouch() {
+      initAudio();
+      window.removeEventListener('touchstart', unlockAudioTouch);
+    }, { once: true });
+
+    // -----------------------------------------------------------------
+    // SCENE NAVIGATION
+    // -----------------------------------------------------------------
     let currentScene = 0;
     function goToScene(sceneNumber) {
       document.querySelectorAll('.scene').forEach(el => el.classList.remove('active'));
