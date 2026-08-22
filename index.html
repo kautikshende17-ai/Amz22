@@ -170,7 +170,7 @@
       z-index: 1;
     }
 
-    /* Letter Paper: Hidden inside until clicked, then smoothly slides out upward */
+    /* Letter Paper: Hidden completely inside the envelope until clicked */
     .letter-paper {
       opacity: 0;
       transform: translateY(20px) scale(0.95);
@@ -265,7 +265,7 @@
   </section>
 
   <!-- ============================================================ -->
-  <!-- SCENE 2: THE HEART & FLOWER TREE BLOSSOM -->
+  <!-- SCENE 2: THE HEART & FLOWER TREE BLOSSOM (LUSH & FULL) -->
   <!-- ============================================================ -->
   <section id="scene2" class="scene bg-gradient-to-b from-[#fdf3eb] to-[#fce4d6] text-gray-800 cursor-pointer" onclick="goToScene(3)">
     <div class="relative w-full max-w-5xl h-full flex flex-col md:flex-row items-center justify-between p-6 md:p-12">
@@ -774,63 +774,103 @@
       }, 520);
     }
 
-    // Scene 2: Dense Tree
+    // ============================================================
+    // SCENE 2: LUSH, DENSE & FULL HEART CANOPY WITH FLOATING PETALS
+    // ============================================================
+    let treeAnimationId = null;
     function initDenseHeartTree() {
       const canvas = document.getElementById('treeCanvas');
       const ctx = canvas.getContext('2d');
+      if (treeAnimationId) cancelAnimationFrame(treeAnimationId);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       let leafProgress = 0;
       const heartLeaves = [];
-      const colors = ['#f472b6', '#fb7185', '#fda4af', '#f43f5e', '#fbbf24', '#fbcfe8', '#e11d48', '#ff9ebb', '#ffe4e6', '#ffd6a5'];
+      const floatingPetals = [];
+      
+      const palette = [
+        '#ff4b72', '#fb7185', '#fda4af', '#f43f5e', '#fbbf24', 
+        '#fbcfe8', '#e11d48', '#ff9ebb', '#ffe4e6', '#ffd6a5', 
+        '#f472b6', '#facc15', '#f87171', '#ffc6ff', '#ffffff'
+      ];
 
-      for (let i = 0; i < 450; i++) {
+      // 750+ Density Particles completely filling the heart volume
+      for (let i = 0; i < 750; i++) {
         const t = Math.random() * Math.PI * 2;
-        const x = 16 * Math.pow(Math.sin(t), 3);
-        const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+        // Mathematical Heart Boundary
+        const hx = 16 * Math.pow(Math.sin(t), 3);
+        const hy = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
         
-        const scale = 9 + Math.random() * 3.5;
-        const isFlower = Math.random() > 0.65;
+        // Full volume radial distribution (no empty holes inside)
+        const volumeFactor = Math.sqrt(Math.random());
+        const scale = 11.2 * volumeFactor;
+        const isFlower = Math.random() > 0.62;
 
         heartLeaves.push({
-          x: 250 + x * scale + (Math.random() - 0.5) * 28,
-          y: 210 + y * scale + (Math.random() - 0.5) * 28,
-          size: isFlower ? 5 + Math.random() * 5 : 7 + Math.random() * 8,
-          color: colors[Math.floor(Math.random() * colors.length)],
+          x: 250 + hx * scale + (Math.random() - 0.5) * 16,
+          y: 200 + hy * scale + (Math.random() - 0.5) * 16,
+          size: isFlower ? 7 + Math.random() * 6 : 9 + Math.random() * 9,
+          color: palette[Math.floor(Math.random() * palette.length)],
           isFlower: isFlower,
-          delay: Math.random() * 55
+          rotation: (Math.random() - 0.5) * 0.8,
+          delay: Math.random() * 50
         });
       }
 
-      function drawHeart(x, y, size, color, alpha) {
+      // Drifting lively petals in the wind
+      for (let i = 0; i < 35; i++) {
+        floatingPetals.push({
+          x: 180 + Math.random() * 140,
+          y: 120 + Math.random() * 160,
+          size: 6 + Math.random() * 6,
+          color: palette[Math.floor(Math.random() * palette.length)],
+          speedX: 0.4 + Math.random() * 0.9,
+          speedY: -0.3 - Math.random() * 0.6,
+          wobble: Math.random() * Math.PI * 2,
+          opacity: 0.4 + Math.random() * 0.5
+        });
+      }
+
+      function draw3DHeart(x, y, size, color, alpha, rot = 0) {
         ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rot);
         ctx.globalAlpha = alpha;
         ctx.fillStyle = color;
         ctx.beginPath();
         const topCurveHeight = size * 0.3;
-        ctx.moveTo(x, y + topCurveHeight);
-        ctx.bezierCurveTo(x, y, x - size / 2, y, x - size / 2, y + topCurveHeight);
-        ctx.bezierCurveTo(x - size / 2, y + (size + topCurveHeight) / 2, x, y + size, x, y + size);
-        ctx.bezierCurveTo(x, y + size, x + size / 2, y + (size + topCurveHeight) / 2, x + size / 2, y + topCurveHeight);
-        ctx.bezierCurveTo(x + size / 2, y, x, y, x, y + topCurveHeight);
+        ctx.moveTo(0, topCurveHeight);
+        ctx.bezierCurveTo(0, 0, -size / 2, 0, -size / 2, topCurveHeight);
+        ctx.bezierCurveTo(-size / 2, (size + topCurveHeight) / 2, 0, size, 0, size);
+        ctx.bezierCurveTo(0, size, size / 2, (size + topCurveHeight) / 2, size / 2, topCurveHeight);
+        ctx.bezierCurveTo(size / 2, 0, 0, 0, 0, topCurveHeight);
         ctx.closePath();
+        ctx.fill();
+
+        // 3D Soft Highlight
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+        ctx.beginPath();
+        ctx.arc(-size * 0.2, topCurveHeight * 0.8, size * 0.14, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
       }
 
-      function drawFlower(x, y, size, color, alpha) {
+      function drawFlower(x, y, size, color, alpha, rot = 0) {
         ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rot);
         ctx.globalAlpha = alpha;
         ctx.fillStyle = color;
         for (let i = 0; i < 5; i++) {
           const angle = (i * 2 * Math.PI) / 5;
           ctx.beginPath();
-          ctx.arc(x + Math.cos(angle) * (size/2), y + Math.sin(angle) * (size/2), size/3, 0, 2 * Math.PI);
+          ctx.arc(Math.cos(angle) * (size * 0.45), Math.sin(angle) * (size * 0.45), size * 0.32, 0, 2 * Math.PI);
           ctx.fill();
         }
-        ctx.fillStyle = '#fff';
+        // Bright golden/white pistil center
+        ctx.fillStyle = '#fffbeb';
         ctx.beginPath();
-        ctx.arc(x, y, size/4, 0, 2 * Math.PI);
+        ctx.arc(0, 0, size * 0.22, 0, 2 * Math.PI);
         ctx.fill();
         ctx.restore();
       }
@@ -838,41 +878,60 @@
       function animateTree() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        ctx.strokeStyle = '#4e2d19';
+        // 1. Organic Tapered Trunk
+        ctx.strokeStyle = '#4e2a16';
         ctx.lineWidth = 18;
         ctx.lineCap = 'round';
         ctx.beginPath();
         ctx.moveTo(250, 460);
-        ctx.quadraticCurveTo(245, 330, 250, 240);
+        ctx.quadraticCurveTo(246, 330, 250, 230);
         ctx.stroke();
 
-        ctx.lineWidth = 8;
+        // 2. Natural Branches
+        ctx.lineWidth = 9;
         ctx.beginPath();
-        ctx.moveTo(250, 310);
-        ctx.quadraticCurveTo(200, 250, 160, 190);
-        ctx.moveTo(250, 290);
-        ctx.quadraticCurveTo(300, 240, 340, 180);
-        ctx.moveTo(250, 250);
-        ctx.quadraticCurveTo(230, 180, 210, 130);
-        ctx.moveTo(250, 250);
-        ctx.quadraticCurveTo(270, 180, 290, 130);
+        ctx.moveTo(250, 320);
+        ctx.quadraticCurveTo(190, 250, 140, 180);
+        ctx.moveTo(250, 300);
+        ctx.quadraticCurveTo(310, 240, 360, 170);
+        ctx.moveTo(250, 240);
+        ctx.quadraticCurveTo(230, 170, 200, 120);
+        ctx.moveTo(250, 240);
+        ctx.quadraticCurveTo(270, 170, 300, 120);
         ctx.stroke();
 
-        leafProgress++;
+        // 3. Render 750+ Dense Canopy Blossoms
+        leafProgress += 0.8;
         heartLeaves.forEach(item => {
           if (leafProgress > item.delay) {
-            const currentAlpha = Math.min(0.95, (leafProgress - item.delay) / 20);
+            const currentAlpha = Math.min(0.96, (leafProgress - item.delay) / 16);
             if (item.isFlower) {
-              drawFlower(item.x, item.y, item.size, item.color, currentAlpha);
+              drawFlower(item.x, item.y, item.size, item.color, currentAlpha, item.rotation);
             } else {
-              drawHeart(item.x, item.y, item.size, item.color, currentAlpha);
+              draw3DHeart(item.x, item.y, item.size, item.color, currentAlpha, item.rotation);
             }
           }
         });
 
-        if (leafProgress < 95) {
-          requestAnimationFrame(animateTree);
+        // 4. Render Lively Floating Petals in the Wind
+        if (leafProgress > 30) {
+          floatingPetals.forEach(p => {
+            p.x += p.speedX;
+            p.y += p.speedY;
+            p.wobble += 0.05;
+            const currentX = p.x + Math.sin(p.wobble) * 2;
+
+            draw3DHeart(currentX, p.y, p.size, p.color, p.opacity, p.wobble);
+
+            // Reset when drifted out of frame
+            if (p.y < 30 || p.x > 490) {
+              p.x = 180 + Math.random() * 120;
+              p.y = 200 + Math.random() * 80;
+            }
+          });
         }
+
+        treeAnimationId = requestAnimationFrame(animateTree);
       }
 
       animateTree();
